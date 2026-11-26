@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Protocol Testing System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px 16px;
+            font-family: Arial, sans-serif;
+            background: #f4f6fa;
+            color: #202b3c;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 27px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .status {
+            display: inline-block;
+            background: #e0f2e9;
+            color: #167344;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+
+        .card {
+            background: white;
+            padding: 23px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+            border: 1px solid #e4e8ef;
+        }
+
+        .card h2 {
+            font-size: 19px;
+            margin-top: 0;
+        }
+
+        .card p {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d5dce6;
+            border-radius: 7px;
+            margin: 10px 0;
+        }
+
+        button {
+            background: #3157d5;
+            color: white;
+            border: none;
+            padding: 11px 19px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background: #2445b5;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .result {
+            display: none;
+            margin-top: 15px;
+            padding: 13px;
+            border-radius: 7px;
+            background: #f0f4ff;
+            font-size: 13px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        .error {
+            background: #fff0f0;
+            color: #a12626;
+        }
+
+        footer {
+            text-align: center;
+            color: #8290a3;
+            font-size: 12px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <h1>Network Protocol Testing System</h1>
+        <p>Cloud-Based TCP and UDP Communication using Python</p>
+        <span class="status">AWS EC2 Server Integration</span>
+    </header>
+
+    <section class="card">
+        <h2>01. TCP Message Testing</h2>
+        <p>Send a message using reliable, connection-oriented TCP communication.</p>
+
+        <form id="tcpForm">
+            <input type="text" name="message" placeholder="Enter your message" required>
+            <button type="submit">Send via TCP</button>
+        </form>
+
+        <div class="result" id="tcpResult"></div>
+    </section>
+
+    <section class="card">
+        <h2>02. UDP Message Testing</h2>
+        <p>Send a message using connectionless UDP communication.</p>
+
+        <form id="udpForm">
+            <input type="text" name="message" placeholder="Enter your message" required>
+            <button type="submit">Send via UDP</button>
+        </form>
+
+        <div class="result" id="udpResult"></div>
+    </section>
+
+    <section class="card">
+        <h2>03. TCP File Transfer</h2>
+        <p>Select a file to transfer securely using TCP. Maximum size: 50 MB.</p>
+
+        <form id="uploadForm">
+            <input type="file" name="file" required>
+            <button type="submit">Upload File</button>
+        </form>
+
+        <div class="result" id="uploadResult"></div>
+    </section>
+
+    <footer>
+        Cloud-Based Network Protocol Implementation and Testing System
+        <br>Python · TCP · UDP · Flask · AWS EC2
+    </footer>
+
+</div>
+
+<script>
+    async function submitForm(formId, endpoint, resultId) {
+        const form = document.getElementById(formId);
+        const result = document.getElementById(resultId);
+        const button = form.querySelector("button");
+
+        button.disabled = true;
+        button.textContent = "Processing...";
+        result.style.display = "block";
+        result.classList.remove("error");
+        result.textContent = "Connecting to server...";
+
+        try {
+            const response = await fetch(endpoint, {
+                method: "POST",
+                body: new FormData(form)
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || data.status !== "success") {
+                throw new Error(data.message || "Request failed");
+            }
+
+            let output = `<strong>Server Response:</strong> ${data.message}`;
+
+            if (data.rtt !== undefined) {
+                output += `<br><strong>Round Trip Time:</strong> ${data.rtt} ms`;
+            }
+
+            if (data.transfer_time !== undefined) {
+                output += `<br><strong>File Size:</strong> ${data.size} bytes`;
+                output += `<br><strong>Transfer Time:</strong> ${data.transfer_time} ms`;
+            }
+
+            result.innerHTML = output;
+
+            if (formId === "uploadForm") {
+                form.reset();
+            }
+
+        } catch (error) {
+            result.classList.add("error");
+            result.textContent = "Error: " + error.message;
+        } finally {
+            button.disabled = false;
+
+            if (formId === "tcpForm") button.textContent = "Send via TCP";
+            if (formId === "udpForm") button.textContent = "Send via UDP";
+            if (formId === "uploadForm") button.textContent = "Upload File";
+        }
+    }
+
+    document.getElementById("tcpForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        submitForm("tcpForm", "/tcp", "tcpResult");
+    });
+
+    document.getElementById("udpForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        submitForm("udpForm", "/udp", "udpResult");
+    });
+
+    document.getElementById("uploadForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        submitForm("uploadForm", "/upload", "uploadResult");
+    });
+</script>
+
+</body>
+</html>
