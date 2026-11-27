@@ -1,192 +1,402 @@
 # Cloud-Based Network Protocol Implementation and Testing System
 
+A Python-based network communication and testing platform that implements TCP and UDP protocols, supports TCP file transfer, measures communication performance, and provides a browser-based interface deployed on AWS EC2.
+
+**Live Application:** http://16.178.83.139:8000
+
+**GitHub Repository:** https://github.com/vatsa2005rishika/Cloud-Based-Network-Protocol-System
+
+---
+
 ## 1. Project Overview
 
-This project demonstrates network communication using TCP (Transmission Control Protocol) and UDP (User Datagram Protocol) through Python socket programming.
+The Cloud-Based Network Protocol Implementation and Testing System is designed to demonstrate and evaluate network communication using two major transport-layer protocols: Transmission Control Protocol (TCP) and User Datagram Protocol (UDP).
 
-It implements client-server communication between Ubuntu Virtual Machines configured using Oracle VirtualBox. The application supports message exchange using TCP and UDP, along with file transfer using TCP.
+The project uses Python socket programming to implement client-server communication. A Flask-based web application provides a simple browser interface through which users can send messages, test protocol responses, and transfer files.
 
-The project also measures Round Trip Time (RTT) to compare the communication behaviour of both protocols. The server is deployed on AWS EC2 to demonstrate cloud-based remote communication.
+The application is deployed on an Amazon Web Services (AWS) EC2 instance, making the web interface accessible through a public IP address.
 
 ## 2. Objectives
 
-- Implement TCP client-server communication.
-- Implement UDP client-server communication.
-- Transfer files using TCP.
-- Measure and compare TCP and UDP response times.
-- Understand reliable and connectionless communication.
-- Deploy the server on AWS EC2.
-- Demonstrate cloud-based networking.
+- Implement TCP-based client-server communication.
+- Implement UDP-based message communication.
+- Enable file transfer using TCP.
+- Measure Round Trip Time (RTT) for message communication.
+- Measure file size and file-transfer duration.
+- Develop a browser-based interface using Flask.
+- Deploy the application and socket services on AWS EC2.
+- Understand the practical differences between TCP and UDP.
 
-## 3. Technologies Used
-
-- Python 3
-- Socket Programming
-- TCP and UDP
-- Ubuntu Linux
-- Oracle VirtualBox
-- AWS EC2
-- Git and GitHub
-- Visual Studio Code
-
-## 4. Project Architecture
-
-### Local Network Configuration
-
-| Component | Configuration |
-|---|---|
-| Server VM | Ubuntu |
-| Server IP | 192.168.50.4 |
-| Client VM | Ubuntu |
-| Client IP | 192.168.50.3 |
-| TCP Port | 5000 |
-| UDP Port | 5001 |
-
-### Cloud Architecture
-
-The server application is hosted on an AWS EC2 Ubuntu instance. A remote client connects to the EC2 public IP address to exchange messages and transfer files.
-
-| Component | Configuration |
-|---|---|
-| Cloud Provider | AWS |
-| Service | Amazon EC2 |
-| Operating System | Ubuntu Server 24.04 LTS |
-| Instance Type | t3.micro |
-| Server Application | Python Socket Server |
-| TCP Port | 5000 |
-| UDP Port | 5001 |
-
-The EC2 server listens on `0.0.0.0` to accept remote client connections through the configured network ports.
-
-## 5. Features
+## 3. Features
 
 ### TCP Communication
-Provides reliable, connection-oriented message exchange between the client and server.
+- Establishes a connection between client and server.
+- Supports text message exchange.
+- Displays the server response.
+- Measures Round Trip Time (RTT).
 
 ### UDP Communication
-Demonstrates connectionless message exchange using UDP datagrams.
+- Supports connectionless message exchange.
+- Receives and responds to UDP datagrams.
+- Measures Round Trip Time (RTT).
 
-### File Transfer
-Transfers files from the client to the server using TCP.
+### TCP File Transfer
+- Supports uploading files through the web interface.
+- Transfers file data using TCP.
+- Saves received files on the server.
+- Reports file size and transfer duration.
 
-### Response Time Measurement
-Measures Round Trip Time (RTT) for TCP and UDP communication.
+### Web Interface
+- Browser-based interface built using Flask.
+- Separate sections for TCP testing, UDP testing and file transfer.
+- Displays communication responses and performance measurements.
 
 ### Cloud Deployment
-Deploys the server application on AWS EC2 for remote communication.
+- Hosted on AWS EC2.
+- Uses Ubuntu Server.
+- Uses Gunicorn to serve the Flask application.
+- Uses systemd to manage application services.
 
-## 6. Project Structure
+## 4. Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| Python | Main programming language |
+| Socket Programming | TCP and UDP communication |
+| TCP | Reliable messaging and file transfer |
+| UDP | Connectionless message communication |
+| Flask | Web application backend |
+| HTML | Web page structure |
+| CSS | Interface styling |
+| JavaScript | Browser-side interactions |
+| Gunicorn | WSGI application server |
+| AWS EC2 | Cloud hosting |
+| Ubuntu | Server operating system |
+| systemd | Service management |
+| Git and GitHub | Version control and source-code hosting |
+
+## 5. System Architecture
+
+The system consists of a browser interface, a Flask application and two Python socket services.
+
+```text
+              User Browser
+                   |
+                   |
+             HTTP - Port 8000
+                   |
+                   v
+             Gunicorn Server
+                   |
+                   v
+               Flask App
+                   |
+            ----------------
+            |              |
+            v              v
+        TCP Service    UDP Service
+        Port 5000      Port 5001
+            |              |
+            v              v
+      TCP Messaging    UDP Messaging
+      TCP File Transfer
+                   |
+                   v
+                AWS EC2
+              Ubuntu Server
+```
+
+The Flask application communicates with the socket services running on the same EC2 instance through the local loopback address.
+
+## 6. Network Port Configuration
+
+| Port | Protocol | Purpose |
+|---|---|---|
+| 8000 | HTTP | Flask web application served by Gunicorn |
+| 5000 | TCP | TCP messaging and file transfer |
+| 5001 | UDP | UDP messaging |
+
+## 7. Project Structure
 
 ```text
 Cloud-Based-Network-Protocol-System/
-├── client.py
+│
 ├── server.py
-├── README.md
+├── client.py
+├── app.py
+│
+├── templates/
+│   └── index.html
+│
 ├── requirements.txt
-├── .gitignore
-└── received_files/
+├── README.md
+└── .gitignore
 ```
 
-## 7. Execution Instructions
+**File descriptions:**
 
-### Start the Server
+- `server.py` – Implements the TCP and UDP socket services.
+- `client.py` – Provides the client-side interface for network testing.
+- `app.py` – Implements the Flask web application and connects browser requests to the socket services.
+- `templates/index.html` – Contains the web interface.
+- `requirements.txt` – Lists the Python dependencies.
+- `.gitignore` – Excludes virtual environments, generated files and sensitive credentials from Git tracking.
+
+## 8. Installation and Local Execution
+
+### Prerequisites
+
+- Python installed.
+- Git installed.
+- A terminal or command prompt.
+- Required Python packages.
+
+### Step 1: Clone the repository
+
+```bash
+git clone https://github.com/vatsa2005rishika/Cloud-Based-Network-Protocol-System.git
+```
+
+```bash
+cd Cloud-Based-Network-Protocol-System
+```
+
+### Step 2: Create a virtual environment
+
+**Windows:**
+
+```powershell
+python -m venv venv
+venv\Scripts\activate
+```
+
+**Ubuntu/Linux:**
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### Step 3: Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### Step 4: Start the socket server
+
+Open a terminal in the project directory and run:
+
+```bash
+python server.py
+```
+
+On Ubuntu/Linux, use:
 
 ```bash
 python3 server.py
 ```
 
-### Start the Client
+Keep this terminal running.
 
-```bash
-python3 client.py
+### Step 5: Start the Flask application
+
+Open a second terminal in the project directory.
+
+**Windows PowerShell:**
+
+```powershell
+$env:SERVER_IP="127.0.0.1"
+$env:PORT="8000"
+python app.py
 ```
 
-### Client Menu
+**Ubuntu/Linux:**
 
-1. Send Message using TCP
-2. Send Message using UDP
-3. Transfer File using TCP
-4. Exit
+```bash
+export SERVER_IP=127.0.0.1
+export PORT=8000
+python3 app.py
+```
 
-### AWS EC2 Deployment
+### Step 6: Open the application
+
+Visit:
+
+```text
+http://127.0.0.1:8000
+```
+
+The browser interface can now be used to test TCP messaging, UDP messaging and TCP file transfer.
+
+**Note:** Run the socket server and Flask application in separate terminals. The local configuration uses port 8000 for the web application to avoid conflicting with the TCP service on port 5000.
+
+## 9. AWS EC2 Deployment
+
+The application was deployed on an AWS EC2 instance with Ubuntu Server 24.04 LTS.
+
+### Deployment configuration
+
+| Component | Configuration |
+|---|---|
+| Cloud platform | Amazon Web Services |
+| Service | EC2 |
+| Instance type | t3.micro |
+| Operating system | Ubuntu Server 24.04 LTS |
+| Web application port | 8000 |
+| TCP service port | 5000 |
+| UDP service port | 5001 |
+| Web server | Gunicorn |
+| Service management | systemd |
+
+### Deployment steps
 
 1. Launch an Ubuntu EC2 instance.
-2. Clone the GitHub repository onto the EC2 instance.
-3. Configure the required inbound security group rules:
-   - TCP port 5000
-   - UDP port 5001
-   - SSH port 22 for remote administration
-4. Start the Python server on the EC2 instance.
-5. Configure the client to connect to the EC2 public IP address.
-6. Run the client and test TCP messaging, UDP messaging and TCP file transfer.
+2. Configure the required inbound security group rules.
+3. Connect to the instance using SSH or EC2 Instance Connect.
+4. Clone the GitHub repository.
+5. Create and activate a Python virtual environment.
+6. Install the required dependencies.
+7. Configure the socket server and Flask application.
+8. Configure Gunicorn to serve the Flask application.
+9. Configure systemd services for automatic startup and restart.
+10. Verify that the services are running and the website is accessible.
 
-## 8. TCP vs UDP Comparison
+### Clone the project on EC2
 
-| Parameter | TCP | UDP |
-|---|---|---|
-| Connection | Connection-oriented | Connectionless |
-| Reliability | Reliable | Best effort |
-| Delivery | Acknowledged | Not guaranteed |
-| Ordering | Maintained | Not guaranteed |
-| Overhead | Higher | Lower |
-| File transfer | Implemented | Not implemented |
+```bash
+git clone https://github.com/vatsa2005rishika/Cloud-Based-Network-Protocol-System.git
+```
 
-## 9. Testing and Results
+```bash
+cd Cloud-Based-Network-Protocol-System
+```
 
-The application was tested using a remote Ubuntu client and an AWS EC2 Ubuntu server.
+### Install dependencies
 
-### Test 1: TCP Message Transmission
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-- Feature: TCP messaging
-- Result: Successful
-- Server response: `Message received successfully by TCP server`
-- Measured RTT: 849.317 ms
+### Start the application services
 
-### Test 2: UDP Message Transmission
+The deployed environment uses two systemd services:
 
-- Feature: UDP messaging
-- Result: Successful
-- Server response: `Message received successfully by UDP server`
-- Measured RTT: 594.117 ms
+- `network-server.service` – Runs the Python TCP/UDP server.
+- `network-web.service` – Runs the Flask application through Gunicorn.
 
-### Test 3: TCP File Transfer
+Check their status:
 
-- Feature: TCP file transfer
-- File name: `sample.txt`
-- File size: 48 bytes
-- Server response: `File sample.txt received successfully`
-- Transfer time: 900.530 ms
-- Result: Successful
+```bash
+sudo systemctl status network-server.service --no-pager
+```
 
-The received file was verified on the AWS EC2 instance inside the `received_files/` directory.
+```bash
+sudo systemctl status network-web.service --no-pager
+```
 
-### Test Summary
+Check the listening ports:
 
-| Test Case | Result |
+```bash
+sudo ss -tulnp | grep -E ':5000|:5001|:8000'
+```
+
+The deployed Flask application uses:
+
+```text
+SERVER_IP=127.0.0.1
+```
+
+This allows the Flask application to communicate with the socket services on the same EC2 machine.
+
+## 10. Testing and Results
+
+The system was tested through local virtual machines and the deployed web application.
+
+### Functional tests
+
+| Test | Expected behaviour |
 |---|---|
-| TCP message transmission | Passed |
-| UDP message transmission | Passed |
-| TCP file transfer | Passed |
-| File receipt on AWS EC2 | Verified |
+| TCP message testing | Server receives the message and returns a response |
+| UDP message testing | Server receives the datagram and returns a response |
+| TCP file transfer | File is received and saved on the server |
+| RTT measurement | Communication response time is measured |
+| File-transfer measurement | File size and transfer duration are reported |
+| Web interface | Browser displays the testing interface |
+| AWS deployment | Application is accessible through the public URL |
 
-**Note:** The measured response and transfer times are observations from individual test runs and may vary with network conditions.
+### Recorded local testing results
 
-## 10. Future Scope
+| Test | Recorded result |
+|---|---|
+| Client-server connectivity | 4 packets received out of 4 |
+| TCP message | Successful response to "Hello server" |
+| TCP message RTT | 13.567 ms |
+| TCP file transfer | `sample.txt` received successfully |
+| File size | 48 bytes |
+| File-transfer time | 18.546 ms |
 
-- Implement reliable UDP file transfer.
-- Develop a graphical user interface.
-- Add detailed network performance analysis.
-- Support multiple simultaneous clients.
-- Implement authentication and encrypted communication.
+### Website response-time optimization
 
-## 11. Conclusion
+During deployment, the website initially showed a very high response time.
 
-The project demonstrates the practical implementation of TCP and UDP protocols using Python socket programming. It provides an understanding of reliable and connectionless communication, file transfer, performance measurement and cloud networking through AWS EC2 deployment.
+The Gunicorn configuration was subsequently changed to use a gthread worker with four threads.
 
-The successful remote testing of TCP messaging, UDP messaging and TCP file transfer validates the functionality of the application in a cloud environment.
+Recorded measurements:
 
-## 12. GitHub Repository
+| Metric | Before optimization | After optimization |
+|---|---:|---:|
+| First byte | Approximately 87.08 s | 0.773943 s |
+| Total loading time | Approximately 87.08 s | 0.774157 s |
 
-Source code and project documentation:
+The recorded total response time decreased substantially after the configuration change.
 
+These are website response-time measurements, not TCP/UDP throughput measurements.
+
+## 11. Limitations
+
+- The application currently runs on a single EC2 instance.
+- HTTPS is not configured.
+- User authentication is not implemented.
+- Large-scale concurrent-client testing has not been established.
+- Performance measurements may vary with network conditions.
+- Persistent message-history functionality is not implemented as a documented feature.
+
+## 12. Future Enhancements
+
+- Implement HTTPS using a domain name and SSL/TLS certificate.
+- Add user authentication and access control.
+- Improve logging and monitoring.
+- Add more detailed network performance analytics.
+- Perform scalability and concurrent-client testing.
+- Conduct repeated performance tests under controlled conditions.
+- Improve the interface and reporting features.
+
+## 13. References
+
+- Python Socket Documentation: https://docs.python.org/3/library/socket.html
+- Flask Documentation: https://flask.palletsprojects.com/
+- Gunicorn Documentation: https://docs.gunicorn.org/
+- AWS EC2 Documentation: https://docs.aws.amazon.com/ec2/
+- Ubuntu Documentation: https://ubuntu.com/server/docs
+- Git Documentation: https://git-scm.com/doc
+
+---
+
+## 14. Project Links
+
+**GitHub Repository:**  
 https://github.com/vatsa2005rishika/Cloud-Based-Network-Protocol-System
+
+**Deployed Web Application:**  
+http://16.178.83.139:8000
+
+---
+
+**Project:** Cloud-Based Network Protocol Implementation and Testing System
+
+**Department:** Computer Science and Engineering
+
+**Academic Year:** 2026–27
